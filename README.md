@@ -56,21 +56,21 @@ Bash
 npm run migration:run
 (Note for development: To generate a new migration after making changes to an entity, run npm run migration:generate src/migrations/YourMigrationName)
 
-📚 API Documentation
+# 📚 API Documentation
 This API uses Swagger for interactive documentation and testing.
 Once the application is running locally, navigate to:
 http://localhost:3000/api
 
 Note: To test protected routes (such as creating /services and managing /bookings), you must first use the /auth/register and /auth/login endpoints. Copy the resulting JWT token, click the "Authorize" padlock icon at the top of the Swagger UI, and paste your token.
 
-🧠 Assumptions Made
+# 🧠 Assumptions Made
 Database Migrations: While TypeORM's synchronize: true can be used for rapid prototyping, explicit migration files have been generated and configured to meet professional standards and ensure safe schema updates.
 
 Public Bookings: As per the project requirements, customers do not need to log in to create a booking. Therefore, the POST /bookings endpoint does not utilize the JWT Auth Guard.
 
 Date & Time Formats: For simplicity and consistency in REST communication, bookingDate is strictly expected as a YYYY-MM-DD string, and bookingTime as an HH:MM string.
 
-🔮 Future Improvements
+# 🔮 Future Improvements
 Add Role-Based Access Control (RBAC) to differentiate between "Admin" privileges and standard authenticated users.
 
 Implement pagination for the GET /bookings and GET /services endpoints to handle large database tables efficiently.
