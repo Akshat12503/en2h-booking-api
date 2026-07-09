@@ -5,6 +5,7 @@ import { Booking, BookingStatus } from './booking.entity';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingStatusDto } from './dto/update-booking-status.dto';
 import { Service } from '../services/service.entity';
+import { GetBookingsFilterDto } from './dto/get-bookings-filter.dto';
 
 @Injectable()
 export class BookingsService {
@@ -42,10 +43,28 @@ export class BookingsService {
     return this.bookingsRepository.save(booking);
   }
 
-  async findAll(): Promise<Booking[]> {
-    return this.bookingsRepository.find({ 
-      relations: { service: true } // Changed from array to object
-    });
+  async findAll(filterDto: GetBookingsFilterDto): Promise<Booking[]> {
+    const { status, search } = filterDto;
+    
+    // Create a query builder to dynamically add SQL clauses
+    const query = this.bookingsRepository.createQueryBuilder('booking')
+      .leftJoinAndSelect('booking.service', 'service'); // This ensures we still load the related Service data
+
+    // If a status was provided, filter by exact status
+    if (status) {
+      query.andWhere('booking.status = :status', { status });
+    }
+
+    // If a search term was provided, check if the name OR email contains the term (case-insensitive)
+    if (search) {
+      query.andWhere(
+        '(LOWER(booking.customerName) LIKE LOWER(:search) OR LOWER(booking.customerEmail) LIKE LOWER(:search))',
+        { search: `%${search}%` }
+      );
+    }
+
+    // Execute the query and return the results
+    return query.getMany();
   }
 
   async findOne(id: string): Promise<Booking> {
